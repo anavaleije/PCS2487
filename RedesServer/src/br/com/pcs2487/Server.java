@@ -15,11 +15,11 @@ public static void main(String[] args) throws IOException {
         
         try (
             ServerSocket serverSocket = new ServerSocket(portNumber);
-            Socket clientSocket = serverSocket.accept();
+        ) {
+        	Socket clientSocket = serverSocket.accept();
             PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);                   
             BufferedReader in = new BufferedReader( 
             		new InputStreamReader(clientSocket.getInputStream()));
-        ) {
         	//GetFilePartRunnable getFilePartRunnable = new GetFilePartRunnable(1);
         	//new Thread(getFilePartRunnable).start();
             String inputLine;
