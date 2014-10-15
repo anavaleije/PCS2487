@@ -18,7 +18,7 @@ public static void main(String[] args) throws IOException {
 
         int portNumber = 25565;
         
-        File arquivoOriginal = new File("teste.txt");
+        File arquivoOriginal = new File("testeImagem.bmp");
 //        ByteArrayOutputStream ous = new ByteArrayOutputStream();
         InputStream ios = new FileInputStream(arquivoOriginal);
         byte[] buffer0 = new byte[4];

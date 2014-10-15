@@ -39,11 +39,11 @@ public class Client {
 //		                System.out.println("echo: " + in.readLine());
 //		                System.out.print("Digite algo: ");
 //		            }
-		            FileOutputStream fos = new FileOutputStream("testeChegou.txt");
+		            FileOutputStream fos = new FileOutputStream("testeImagemChegou.bmp");
 		            in.read(buffer, 0, 4);
 		            fos.write(buffer, 0, 4);
 		            in.read(buffer, 4, 1020);
-		            fos.write(buffer, 4, 1020);
+		            fos.write(buffer, 4, 1020); //FIXME Aqui ele completa com vários \00, tem que arrumar 
 		            fos.flush();
 		            fos.close();
 		            
