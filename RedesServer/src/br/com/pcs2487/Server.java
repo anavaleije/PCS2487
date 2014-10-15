@@ -43,10 +43,12 @@ public static void main(String[] args) throws IOException {
 //                out.println(inputLine);
 //            }
             out.write(buffer);
+            out.flush();
         } catch (IOException e) {
             System.out.println("Exception caught when trying to listen on port "
                 + portNumber + " or listening for a connection");
             System.out.println(e.getMessage());
         }
+        System.out.println("Fim server");
     }
 }

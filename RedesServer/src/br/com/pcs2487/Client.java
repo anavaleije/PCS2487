@@ -42,6 +42,7 @@ public class Client {
 		            FileOutputStream fos = new FileOutputStream("testeChegou.txt");
 		            fos.write(buffer);
 		            fos.flush();
+		            fos.close();
 		            
 		        } catch (UnknownHostException e) {
 		            System.err.println("Don't know about host " + hostName);
@@ -51,6 +52,7 @@ public class Client {
 		                hostName);
 		            System.exit(1);
 		        }
+		        System.out.println("Fim cliente");
 	        }
 	    }
 }
