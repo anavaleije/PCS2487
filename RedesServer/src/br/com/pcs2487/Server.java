@@ -21,9 +21,11 @@ public static void main(String[] args) throws IOException {
         File arquivoOriginal = new File("teste.txt");
 //        ByteArrayOutputStream ous = new ByteArrayOutputStream();
         InputStream ios = new FileInputStream(arquivoOriginal);
-        byte[] buffer = new byte[1024];
+        byte[] buffer0 = new byte[4];
+        byte[] buffer1 = new byte[1024];
         
-        ios.read(buffer);
+        ios.read(buffer0, 0, 4);
+        ios.read(buffer1, 0, 1024);
         
         try (
             ServerSocket serverSocket = new ServerSocket(portNumber);
@@ -42,7 +44,9 @@ public static void main(String[] args) throws IOException {
 //            while ((inputLine = in.readLine()) != null) {
 //                out.println(inputLine);
 //            }
-            out.write(buffer);
+            out.write(buffer0);
+            out.flush();
+            out.write(buffer1);
             out.flush();
         } catch (IOException e) {
             System.out.println("Exception caught when trying to listen on port "

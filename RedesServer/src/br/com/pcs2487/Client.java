@@ -18,6 +18,7 @@ public class Client {
 	        int nThreads = 1; //Integer.parseInt(args[0]);
 	        
 	        byte[] buffer = new byte[1024];
+	        byte[] buffer1 = new byte[1024];
 	        
 	        for (int i = 0; i < nThreads; i++) {
 	        	
@@ -38,9 +39,11 @@ public class Client {
 //		                System.out.println("echo: " + in.readLine());
 //		                System.out.print("Digite algo: ");
 //		            }
-		            in.read(buffer);
 		            FileOutputStream fos = new FileOutputStream("testeChegou.txt");
-		            fos.write(buffer);
+		            in.read(buffer, 0, 4);
+		            fos.write(buffer, 0, 4);
+		            in.read(buffer, 4, 1020);
+		            fos.write(buffer, 4, 1020);
 		            fos.flush();
 		            fos.close();
 		            
