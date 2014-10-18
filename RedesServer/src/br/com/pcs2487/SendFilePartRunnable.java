@@ -1,7 +1,7 @@
 package br.com.pcs2487;
 
-import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.net.Socket;
 
@@ -17,27 +17,35 @@ public class SendFilePartRunnable implements Runnable {
 		this.fileName = fileName;
 		this.offset = offset;
 		this.len = len;
-		this.buffer = new byte[len];
+		this.buffer = new byte[2048 * 1024]; // 2MB
 		this.socket = socket;
 	}
 
 	@Override
 	public void run() {
-		try {
+		try (
 			RandomAccessFile file = new RandomAccessFile(fileName, "r");
+			DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+		) {
+			out.writeInt(offset);
 			file.seek(offset);
-			file.read(buffer, 0, len);
-			
-			DataOutputStream out = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
-			out.write(buffer);
-			out.flush();
-			
-			file.close();
-			out.close();
-			socket.close();
+			int minLen = Math.min(len, buffer.length);
+			int totalReadBytes = 0;
+			while (totalReadBytes < len) {
+				int readBytes = file.read(buffer, 0, minLen);
+				out.write(buffer, 0, readBytes);
+				out.flush();
+				totalReadBytes += readBytes;
+			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
+		} finally {
+			try {
+				socket.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 

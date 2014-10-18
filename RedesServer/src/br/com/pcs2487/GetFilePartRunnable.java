@@ -1,6 +1,5 @@
 package br.com.pcs2487;
 
-import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.RandomAccessFile;
 import java.net.Socket;
@@ -8,33 +7,33 @@ import java.net.Socket;
 public class GetFilePartRunnable implements Runnable {
 	
 	private String fileName;
-	private int offset;
 	private byte[] buffer;
-	private Socket socket;
+	private String hostName;
+	private int portNumber;
 
-	public GetFilePartRunnable(String fileName, int offset, Socket socket) {
+	public GetFilePartRunnable(String fileName, String hostName, int portNumber) {
 		this.fileName = fileName;
-		this.offset = offset;
-		this.buffer = new byte[255];
-		this.socket = socket;
+		this.buffer = new byte[1024 * 1024]; // 1MB
+		this.hostName = hostName;
+		this.portNumber = portNumber;
 	}
 
 	@Override
 	public void run() {
+		
 		try (
-			DataInputStream in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
+			Socket socket = new Socket(hostName, portNumber);
+			DataInputStream in = new DataInputStream(socket.getInputStream());
 			RandomAccessFile file = new RandomAccessFile(fileName, "rw");
-		){
-			int readBytes = in.read(buffer, 0, 255);
-			
+		) {
+			int offset = in.readInt();
+			int readBytes = in.read(buffer, 0, buffer.length);
 			while (readBytes != -1) {
 				file.seek(offset);
 	        	file.write(buffer, 0, readBytes);
 	        	offset += readBytes;
-	        	readBytes = in.read(buffer, 0, 255);
+	        	readBytes = in.read(buffer, 0, buffer.length);
 			}
-	        
-	        socket.close();
         } catch (Exception e) {
             e.printStackTrace();
         }

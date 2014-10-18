@@ -30,20 +30,10 @@ public class Client extends Thread {
 	        	fileLength = in.readLong();
 	        	file.setLength(fileLength);
 	        	
-	        	int len = (int) (fileLength/nThreads);
-	        	
 	        	for (int i = 0; i < nThreads; i++) {
-	        		
-	        		int offset = i*len;
-					
-					if (i == nThreads - 1) {
-						len += (int) (fileLength%nThreads);
-					}
-					
-	        		Socket socketPart = new Socket(hostName, portNumber);
-	        		new GetFilePartRunnable(fileName, offset, socketPart).run();
+	        		new Thread(new GetFilePartRunnable(fileName, hostName, portNumber)).start();
 				}
-	        	
+        		
 	        } catch (Exception e) {
 				e.printStackTrace();
 			}

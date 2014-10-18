@@ -9,25 +9,31 @@ import java.net.Socket;
 
 public class Server {
 
-public static void main(String[] args) throws IOException {
+@SuppressWarnings("resource")
+public static void main(String[] args) {
 
-        int portNumber = 25565;
+        final int portNumber = 25565;
         int nThreads;
         String fileName;
         byte[] fileNameBuffer;
+        ServerSocket serverSocket;
+		try {
+			serverSocket = new ServerSocket(portNumber);
+		} catch (IOException e1) {
+			e1.printStackTrace();
+			return;
+		}
         
         while (true) {
 			try ( // try-with-resources: fecha os sockets e os streams sozinho
-				ServerSocket serverSocket = new ServerSocket(portNumber);
 				Socket clientSocket = serverSocket.accept();
-
 				DataInputStream in = new DataInputStream(clientSocket.getInputStream());
 				DataOutputStream out = new DataOutputStream(clientSocket.getOutputStream());
 			) {
 				
 				// Pegando pedido do cliente: qual arquivo e quantas threads
 				nThreads = in.readInt();
-				fileNameBuffer = new byte[255];
+				fileNameBuffer = new byte[256];
 				in.read(fileNameBuffer);
 				fileName = "serverFiles" + File.separator + new String(fileNameBuffer).trim();
 				
@@ -49,8 +55,8 @@ public static void main(String[] args) throws IOException {
 						len += (int) (file.length()%nThreads);
 					}
 					
-					Socket partSocket = serverSocket.accept();
-					new SendFilePartRunnable(fileName, offset, len, partSocket).run();
+					Socket socket = serverSocket.accept();
+					new Thread(new SendFilePartRunnable(fileName, offset, len, socket)).start();
 				}
 				
 			} catch (Exception e) {
