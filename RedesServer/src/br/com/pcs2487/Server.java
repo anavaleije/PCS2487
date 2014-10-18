@@ -1,14 +1,9 @@
 package br.com.pcs2487;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -17,42 +12,45 @@ public class Server {
 public static void main(String[] args) throws IOException {
 
         int portNumber = 25565;
+        int nThreads;
+        String fileName;
+        byte[] fileNameBuffer;
         
-        File arquivoOriginal = new File("testeImagem.bmp");
-//        ByteArrayOutputStream ous = new ByteArrayOutputStream();
-        InputStream ios = new FileInputStream(arquivoOriginal);
-        byte[] buffer0 = new byte[4];
-        byte[] buffer1 = new byte[1024];
-        
-        ios.read(buffer0, 0, 4);
-        ios.read(buffer1, 0, 1024);
-        
-        try (
-            ServerSocket serverSocket = new ServerSocket(portNumber);
-        ) {
-        	Socket clientSocket = serverSocket.accept();
-        	
-        	DataOutputStream out = new DataOutputStream(new BufferedOutputStream(clientSocket.getOutputStream()));
-            DataInputStream in = new DataInputStream(new BufferedInputStream(clientSocket.getInputStream()));
-        	
-//            PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);                   
-//            BufferedReader in = new BufferedReader( 
-//            		new InputStreamReader(clientSocket.getInputStream()));
-        	//GetFilePartRunnable getFilePartRunnable = new GetFilePartRunnable(1);
-        	//new Thread(getFilePartRunnable).start();
-//            String inputLine;
-//            while ((inputLine = in.readLine()) != null) {
-//                out.println(inputLine);
-//            }
-            out.write(buffer0);
-            out.flush();
-            out.write(buffer1);
-            out.flush();
-        } catch (IOException e) {
-            System.out.println("Exception caught when trying to listen on port "
-                + portNumber + " or listening for a connection");
-            System.out.println(e.getMessage());
-        }
-        System.out.println("Fim server");
+        while (true) {
+			try ( // try-with-resources: fecha os sockets e os streams sozinho
+				ServerSocket serverSocket = new ServerSocket(portNumber);
+				Socket clientSocket = serverSocket.accept();
+
+				DataInputStream in = new DataInputStream(clientSocket.getInputStream());
+				DataOutputStream out = new DataOutputStream(clientSocket.getOutputStream());
+			) {
+				
+				// Pegando pedido do cliente: qual arquivo e quantas threads
+				nThreads = in.readInt();
+				fileNameBuffer = new byte[255];
+				in.read(fileNameBuffer);
+				fileName = "serverFiles" + File.separator + new String(fileNameBuffer).trim();
+				
+				File file = new File(fileName);
+				int len = (int) (file.length()/nThreads);
+				
+				// Enviando o tamanho do arquivo para o cliente
+				out.writeLong(file.length());
+				
+				for (int i = 0; i < nThreads; i++) {
+					int offset = i*len;
+					
+					if (i == nThreads - 1) {
+						len += (int) (file.length()%nThreads);
+					}
+					
+					Socket partSocket = serverSocket.accept();
+					new SendFilePartRunnable(fileName, offset, len, partSocket).run();
+				}
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
     }
 }
