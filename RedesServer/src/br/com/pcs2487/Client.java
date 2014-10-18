@@ -41,7 +41,7 @@ public class Client extends Thread {
 					}
 					
 	        		Socket socketPart = new Socket(hostName, portNumber);
-	        		new GetFilePartRunnable(fileName, offset, len, socketPart).run();
+	        		new GetFilePartRunnable(fileName, offset, socketPart).run();
 				}
 	        	
 	        } catch (Exception e) {
