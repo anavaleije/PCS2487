@@ -31,6 +31,11 @@ public static void main(String[] args) throws IOException {
 				in.read(fileNameBuffer);
 				fileName = "serverFiles" + File.separator + new String(fileNameBuffer).trim();
 				
+				if (fileName.contains("..")) {
+					System.out.println("Tentativa de acesso a pastas mais altas na árvore de arquivos.");
+					continue;
+				}
+				
 				File file = new File(fileName);
 				int len = (int) (file.length()/nThreads);
 				
