@@ -10,10 +10,10 @@ public class Client extends Thread {
 
 	 public static void main(String[] args) throws IOException {
 
-	        String hostName = "localhost";
-	        int portNumber = 25565;
-	        int nThreads = Integer.parseInt(args[0]);
-	        String fileName = args[1];
+	        String hostName = args[0];
+	        int portNumber = Integer.parseInt(args[1]);
+	        int nThreads = Integer.parseInt(args[2]);
+	        String fileName = args[3];
 	        long fileLength;
 	        
 	        try ( // try-with-resources: fecha os sockets e os streams sozinho
