@@ -13,7 +13,7 @@ public class GetFilePartRunnable implements Runnable {
 
 	public GetFilePartRunnable(String fileName, String hostName, int portNumber) {
 		this.fileName = fileName;
-		this.buffer = new byte[1024 * 1024]; // 1MB
+		this.buffer = new byte[1024]; // 1kB
 		this.hostName = hostName;
 		this.portNumber = portNumber;
 	}

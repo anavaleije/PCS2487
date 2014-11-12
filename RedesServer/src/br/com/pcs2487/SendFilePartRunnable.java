@@ -17,7 +17,7 @@ public class SendFilePartRunnable implements Runnable {
 		this.fileName = fileName;
 		this.offset = offset;
 		this.len = len;
-		this.buffer = new byte[2048 * 1024]; // 2MB
+		this.buffer = new byte[2048]; // 2kB
 		this.socket = socket;
 	}
 
